@@ -1,0 +1,71 @@
+name: CI
+
+# Runs on every push and PR. A green run means `npm run build` would succeed
+# on Vercel, so a red run is caught before the deploy, not after.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Read-only by default. Nothing in this workflow needs to write to the repo.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  content:
+    name: Validate content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: tools/blogctl/go.mod
+          # blogctl has no module dependencies, so there is no go.sum to cache.
+          cache: false
+
+      - name: go vet
+        working-directory: tools/blogctl
+        run: go vet ./...
+
+      - name: gofmt
+        working-directory: tools/blogctl
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "These files need gofmt:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: blogctl validate
+        run: go -C tools/blogctl run . validate
+
+  build:
+    name: Typecheck and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # `npm ci` installs exactly what package-lock.json pins — no surprise
+      # version drift between CI and the Vercel build.
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+
+      - name: Fail on known vulnerabilities
+        run: npm audit --audit-level=high

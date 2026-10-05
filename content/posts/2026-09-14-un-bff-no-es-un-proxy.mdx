@@ -1,0 +1,79 @@
+---
+title: "A BFF is not a proxy"
+date: 2026-09-14
+summary: "The fastest way to ruin a backend-for-frontend is to treat it as a pass-through. The value was never in the forwarding."
+tags: ["architecture", "apis", "bff"]
+---
+
+The first backend-for-frontend I helped build was, for about four months, a
+very expensive `fetch`. A request came in, we called three services, we glued
+their JSON together, we sent it back. Reviewers kept asking the same question
+in different words: *why is this a service and not a function in the app?*
+
+They were right to ask. A BFF that only forwards is a proxy with a deploy
+pipeline.
+
+## What changed my mind
+
+The turn came when we moved one decision out of the mobile client and into the
+BFF: which price to show.
+
+That sounds trivial. It isn't. The price depended on the user's country, on
+whether a promotion had been applied, on inventory state, and on a tax rule
+that differed in two of our five markets. Every client — iOS, Android, web —
+had reimplemented it, and all three had drifted. The web one had been correct
+for eleven months and then quietly wasn't.
+
+<Callout>
+The moment a rule exists in three clients, it exists in three versions. Only
+one of them is right, and you will find out which from a customer.
+</Callout>
+
+Once that logic moved, the BFF stopped being a proxy. It became the place
+where *"what should this screen show"* was answered, exactly once.
+
+## The shape that worked
+
+The contract stopped mirroring our services and started mirroring the screen:
+
+```ts title="checkout-summary.ts"
+type CheckoutSummary = {
+  // Already resolved: country, promos and tax rules applied upstream.
+  displayPrice: Money;
+  // The client renders this string. It does not compute it.
+  priceExplanation: string;
+  // Every action the screen can take, with the server's verdict baked in.
+  actions: {
+    canApplyPromo: boolean;
+    canCheckout: boolean;
+    blockedReason?: "out_of_stock" | "unverified_user" | "market_closed";
+  };
+};
+```
+
+Note what is missing. There is no `inventoryCount` for the client to compare
+against zero. There is no `promotions[]` for the client to sum. If the client
+can derive a decision, it will, and then it owns that decision forever.
+
+## Three rules I'd keep
+
+**One: the response is the screen, not the domain.** If a field exists only so
+the client can compute another field, it shouldn't be in the response.
+
+**Two: booleans over data for anything the user can do.** `canCheckout: false`
+with a reason is a contract. `inventoryCount: 0` is an invitation to guess.
+
+**Three: one BFF per surface, and let them diverge.** We tried to share one
+between mobile and web for a quarter. Every change needed two sets of
+regression tests and satisfied neither team. Two BFFs with some duplicated
+glue code was cheaper than one with a flag for every difference.
+
+## What it cost
+
+Latency, honestly. We added a hop, and p99 went up by about 40ms before we
+fixed it with request-level parallelism and a short cache on the market rules.
+That was a real cost and worth naming — the version of this post where the BFF
+is free is a lie.
+
+What we got back was that the price bug class disappeared. Not "got rarer."
+There was one place to be wrong, and we fixed it once.

@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Vercel
+.vercel/
+
+# Environment — nothing here needs secrets, and this keeps it that way
+.env
+.env.*
+!.env.example
+
+# Go
+tools/blogctl/blogctl
+tools/blogctl/*.test
+
+# Editors / OS
+.DS_Store
+.idea/
+*.swp
+.vscode/*
+!.vscode/extensions.json

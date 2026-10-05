@@ -1,0 +1,29 @@
+version: 2
+
+# Keeping dependencies current is the single highest-value security control in
+# a repo like this: there is no server to harden, so the realistic risk is a
+# compromised or stale package in the build.
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # One PR for the framework, one for everything else — fewer PRs to review
+      # without hiding a Next.js major behind a batch of patches.
+      next:
+        patterns: ["next", "react", "react-dom", "@types/react*"]
+      rest:
+        patterns: ["*"]
+        exclude-patterns: ["next", "react", "react-dom", "@types/react*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+
+  - package-ecosystem: gomod
+    directory: /tools/blogctl
+    schedule:
+      interval: monthly

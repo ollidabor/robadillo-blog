@@ -1,0 +1,51 @@
+---
+title: "Hello, and what this is for"
+date: 2026-10-01
+summary: "Why I built a site instead of posting in threads, and what you can expect to find here."
+tags: ["meta"]
+---
+
+I've written a lot of things that are now gone. Internal docs behind an SSO
+I no longer have, threads on a platform that renamed itself, Slack messages in
+a workspace I was offboarded from. Some of it was worth keeping.
+
+So: a site. Files in a git repo, rendered to static HTML, on a domain I own.
+If it disappears it will be because I deleted it.
+
+## What you'll find
+
+**Posts** about backend systems — APIs, contracts, migrations, and the
+unglamorous parts of making something scale. I'm more interested in the
+decisions than the frameworks. A post about a BFF is really a post about where
+a rule should live.
+
+**Projects**, including things that shipped to millions of people and things
+that were a weekend and then nothing.
+
+**[Al día](/al-dia)** — videos and posts I'd otherwise send you in a DM.
+
+## How it's built
+
+Deliberately boring, which felt like the only honest option given what I write
+about:
+
+- Next.js with `output: "export"`, so `npm run build` produces a folder of
+  HTML and nothing else runs anywhere
+- Posts are MDX files in `content/posts/`, so publishing is a commit
+- No database, no API, no analytics script, no cookie banner — because there
+  are no cookies to warn you about
+- Embeds load on click, so nothing reaches YouTube or X until you ask
+
+<Callout>
+The whole thing is [open on GitHub](https://github.com/ollidabor/robadillo-blog).
+If you want the same setup, clone it — `docs/CUSTOMIZING.md` is written for
+exactly that.
+</Callout>
+
+There's a small Go CLI in `tools/blogctl` that scaffolds posts and refuses to
+let me commit a file with broken frontmatter. It exists because I know myself.
+
+## The RSS feed works
+
+It's at [/rss.xml](/rss.xml). No newsletter, no signup, nothing that needs your
+email address. If something here is useful, that's the whole arrangement.
