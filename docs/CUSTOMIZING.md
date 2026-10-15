@@ -93,6 +93,11 @@ change the hue on the three `--accent*` lines in each of the three blocks:
 --accent-subtle: oklch(94% 0.05 250);
 ```
 
+`--ditto` and `--ditto-subtle` (a Ditto pink, hue `340°`) are used only by the
+home page's hero grid (`src/components/HeroGrid.tsx`) — the digits that light
+up under the pointer. Change the hue there to recolour the effect without
+touching the accent.
+
 ### There are three blocks, and you need all three
 
 ```

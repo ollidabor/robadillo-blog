@@ -11,6 +11,7 @@
 // Usage:
 //
 //	blogctl new "Post title"   scaffold content/posts/<date>-<slug>.mdx
+//	blogctl add <url>          add a YouTube video or X post from its URL
 //	blogctl validate           check every post, fail on anything broken
 //	blogctl thumbs             download thumbnails for content/videos.ts
 //	blogctl stats              word counts and tag distribution
@@ -28,6 +29,7 @@ const usage = `blogctl — authoring tool for this site
 
 Usage:
   blogctl new <title>     Scaffold a new post in content/posts/
+  blogctl add <url>       Add a YouTube video or X post from its URL
   blogctl validate        Validate all content; non-zero exit on any problem
   blogctl thumbs          Download YouTube thumbnails into public/thumbs/
   blogctl stats           Show word counts and tag distribution
@@ -37,6 +39,7 @@ Flags:
   new  -date YYYY-MM-DD   Publish date (default: today)
        -draft             Mark the post as a draft
        -tags a,b,c        Comma-separated tags
+  add  -note "…"          Why it's here, in your words
 `
 
 func main() {
@@ -60,6 +63,8 @@ func run(args []string) error {
 	switch args[0] {
 	case "new":
 		return cmdNew(root, args[1:])
+	case "add":
+		return cmdAdd(root, args[1:])
 	case "validate":
 		return cmdValidate(root)
 	case "thumbs":

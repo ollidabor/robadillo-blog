@@ -32,6 +32,7 @@ Via npm, from the repo root:
 
 ```bash
 npm run new -- "Post title"    # scaffold a post
+npm run add -- "<url>"         # add a YouTube video or X post
 npm run validate               # check everything
 npm run thumbs                 # download YouTube thumbnails
 npm run stats                  # word counts and tags
@@ -73,6 +74,25 @@ blogctl new -date 2026-11-04 -tags "go,tooling" -draft "Title here"
 
 Refuses to overwrite an existing file.
 
+### `add <url>`
+
+Adds a YouTube video or an X post to the top of `content/videos.ts` or
+`content/tweets.ts`, from the URL as you'd paste it (`watch?v=`, `youtu.be/`,
+`/shorts/`, `/live/`; `x.com` or `twitter.com` `/status/`).
+
+```bash
+blogctl add "https://youtu.be/f84n5oFoZBc" -note "Why it's here."
+```
+
+| Flag | Default | |
+| --- | --- | --- |
+| `-note` | `TODO: …` for videos, none for posts | Your take; flags may go before or after the URL |
+
+Metadata comes from YouTube's and X's public oEmbed endpoints — no key, no
+account, responses bounded at 1 MiB. Videos also get their thumbnail, exactly
+as `thumbs` would fetch it. Refuses an id that's already in the file, and
+writes through a temp file so an interrupted run can't truncate it.
+
 ### `validate`
 
 Exits non-zero if anything is wrong, and reports **every** problem rather than
@@ -92,6 +112,7 @@ Errors:
 Warnings (non-fatal):
 
 - A video in `content/videos.ts` with no downloaded thumbnail
+- A `TODO` note left behind by `blogctl add`
 
 External links are deliberately not checked: a validator that makes network
 calls can't run offline or in a pre-commit hook.
@@ -122,6 +143,7 @@ Word counts per post and the tag distribution. No purpose beyond curiosity.
 | `frontmatter.go` | The YAML subset parser and per-post validation |
 | `validate.go` | Loading posts, duplicate slugs, internal links, thumbnails |
 | `new.go` | Scaffolding |
+| `add.go` | Videos and posts from a URL, via oEmbed |
 | `thumbs.go` | Thumbnail downloads |
 | `stats.go` | Counting |
 

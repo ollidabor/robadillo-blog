@@ -30,6 +30,10 @@
   --accent-subtle: oklch(94% 0.05 135);
 
   --selection: oklch(90% 0.09 135);
+
+  /* Ditto pink: the hero grid's hover glow. */
+  --ditto: oklch(62% 0.17 340);
+  --ditto-subtle: oklch(93% 0.05 340);
 }
 
 /* OS preference, unless the visitor explicitly chose light. */
@@ -53,6 +57,9 @@
     --accent-subtle: oklch(28% 0.07 125);
 
     --selection: oklch(35% 0.1 125);
+
+    --ditto: oklch(80% 0.13 340);
+    --ditto-subtle: oklch(30% 0.08 340);
   }
 }
 
@@ -76,6 +83,9 @@
   --accent-subtle: oklch(28% 0.07 125);
 
   --selection: oklch(35% 0.1 125);
+
+  --ditto: oklch(80% 0.13 340);
+  --ditto-subtle: oklch(30% 0.08 340);
 }
 
 /* Expose the tokens to Tailwind as utilities: bg-bg, text-fg-muted, border-border… */
@@ -94,6 +104,9 @@
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
   --color-accent-subtle: var(--accent-subtle);
+
+  --color-ditto: var(--ditto);
+  --color-ditto-subtle: var(--ditto-subtle);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono-face), ui-monospace, "SF Mono", monospace;
@@ -162,6 +175,58 @@ body {
     transparent 70%
   );
   opacity: 0.5;
+}
+
+/* ---------------------------------------------------------------------------
+   Hero grid — a field of digits that light up under the pointer.
+
+   The trick is asymmetric transitions: a lit cell snaps on instantly
+   (transition: none) and, once HeroGrid drops the attribute, fades back over
+   a second. Moving the pointer leaves a pink trail that cools behind it.
+   --------------------------------------------------------------------------- */
+
+.hero-grid {
+  mask-image: radial-gradient(120% 90% at 70% 40%, #000 30%, transparent 85%);
+}
+
+.hero-grid > span {
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  color: color-mix(in oklch, var(--fg-subtle) 32%, transparent);
+  transition:
+    color 1.1s ease-out,
+    background-color 1.1s ease-out,
+    text-shadow 1.1s ease-out;
+}
+
+.hero-grid > span[data-lit] {
+  transition: none;
+}
+
+.hero-grid > span[data-lit="1"] {
+  color: var(--ditto);
+  background-color: color-mix(in oklch, var(--ditto) 14%, transparent);
+  text-shadow: 0 0 10px var(--ditto);
+}
+
+.hero-grid > span[data-lit="2"] {
+  color: color-mix(in oklch, var(--ditto) 65%, transparent);
+}
+
+/* Soft wash that follows the pointer; --x/--y are set by HeroGrid. */
+.hero-spotlight {
+  background: radial-gradient(
+    18rem circle at var(--x, 50%) var(--y, 50%),
+    color-mix(in oklch, var(--ditto-subtle) 80%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.hero:hover .hero-spotlight {
+  opacity: 1;
 }
 
 /* ---------------------------------------------------------------------------
