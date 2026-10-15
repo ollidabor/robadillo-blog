@@ -5,6 +5,7 @@ import { getAllPosts } from "@/lib/posts";
 import { PostCard } from "@/components/PostCard";
 import { ProjectCard } from "@/components/ProjectCard";
 import { SocialIcon } from "@/components/SocialIcon";
+import { HeroGrid } from "@/components/HeroGrid";
 
 export default function HomePage() {
   const posts = getAllPosts().slice(0, 3);
@@ -12,55 +13,57 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="max-w-measure">
-        <p className="mb-4 font-mono text-xs uppercase tracking-[0.18em] text-accent">
-          {site.location}
-        </p>
+      <HeroGrid>
+        <div className="max-w-measure">
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.18em] text-accent">
+            {site.location}
+          </p>
 
-        <h1 className="text-balance text-4xl font-semibold tracking-tight text-fg sm:text-5xl">
-          {site.name}
-        </h1>
+          <h1 className="text-balance text-4xl font-semibold tracking-tight text-fg sm:text-5xl">
+            {site.name}
+          </h1>
 
-        <p className="mt-4 text-pretty text-xl leading-snug text-fg-muted">
-          {site.tagline}
-        </p>
+          <p className="mt-4 text-pretty text-xl leading-snug text-fg-muted">
+            {site.tagline}
+          </p>
 
-        <p className="mt-6 text-pretty leading-relaxed text-fg-muted">
-          {site.description}
-        </p>
+          <p className="mt-6 text-pretty leading-relaxed text-fg-muted">
+            {site.description}
+          </p>
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link
-            href="/about"
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-fg transition-opacity hover:opacity-90"
-          >
-            More about me
-          </Link>
-          <Link
-            href="/blog"
-            className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-fg transition-colors hover:border-border-strong"
-          >
-            Read the blog
-          </Link>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Link
+              href="/about"
+              className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-fg transition-opacity hover:opacity-90"
+            >
+              More about me
+            </Link>
+            <Link
+              href="/blog"
+              className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-fg transition-colors hover:border-border-strong"
+            >
+              Read the blog
+            </Link>
 
-          <ul className="ml-1 flex items-center gap-3">
-            {site.socials.map((social) => (
-              <li key={social.label}>
-                <a
-                  href={social.href}
-                  className="block text-fg-subtle transition-colors hover:text-fg"
-                  {...(social.href.startsWith("http")
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
-                >
-                  <SocialIcon icon={social.icon} className="size-[18px]" />
-                  <span className="sr-only">{social.label}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
+            <ul className="ml-1 flex items-center gap-3">
+              {site.socials.map((social) => (
+                <li key={social.label}>
+                  <a
+                    href={social.href}
+                    className="block text-fg-subtle transition-colors hover:text-fg"
+                    {...(social.href.startsWith("http")
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                  >
+                    <SocialIcon icon={social.icon} className="size-[18px]" />
+                    <span className="sr-only">{social.label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </section>
+      </HeroGrid>
 
       {posts.length > 0 && (
         <section className="mt-24">
