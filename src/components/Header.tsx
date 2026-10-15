@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { site } from "@content/site";
 import { NavLink } from "./NavLink";
+import { MobileMenu } from "./MobileMenu";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
@@ -15,13 +16,16 @@ export function Header() {
           <span className="text-fg-subtle">.com</span>
         </Link>
 
-        <nav aria-label="Main" className="ml-auto flex items-center gap-5">
-          {site.nav.map((item) => (
-            <NavLink key={item.href} {...item} />
-          ))}
-        </nav>
+        <div className="ml-auto flex items-center gap-3 sm:gap-6">
+          <nav aria-label="Main" className="hidden items-center gap-5 sm:flex">
+            {site.nav.map((item) => (
+              <NavLink key={item.href} {...item} />
+            ))}
+          </nav>
 
-        <ThemeToggle />
+          <ThemeToggle />
+          <MobileMenu items={site.nav} />
+        </div>
       </div>
     </header>
   );
