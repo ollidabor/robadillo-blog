@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "validate": "go -C tools/blogctl run . validate",
     "new": "go -C tools/blogctl run . new",
+    "add": "go -C tools/blogctl run . add",
     "thumbs": "go -C tools/blogctl run . thumbs",
     "stats": "go -C tools/blogctl run . stats",
     "check": "npm run validate && npm run typecheck && npm run build",

@@ -138,6 +138,24 @@ as `summary` in more words, delete it.
 
 ---
 
+## Videos and posts from a URL
+
+```bash
+npm run add -- "https://youtu.be/f84n5oFoZBc" -note "Why it's here."
+npm run add -- "https://x.com/jack/status/20" -note "Why it's here."
+```
+
+That reads the title and channel (or the text, author and date) from the
+site's public oEmbed endpoint, adds the entry at the top of
+`content/videos.ts` or `content/tweets.ts`, and for a video downloads the
+thumbnail too. No API key. Review the diff before committing — titles often
+come with suffixes worth trimming.
+
+`-note` is optional. Without it a video gets a `TODO` note, which `npm run
+validate` warns about until you replace it. Running it twice with the same URL
+is refused rather than duplicated. Deleted, private and age-restricted posts
+can't be fetched; add those by hand as below.
+
 ## Videos
 
 Edit `content/videos.ts`, then download the thumbnail:

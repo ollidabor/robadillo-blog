@@ -25,6 +25,7 @@ func cmdValidate(root string) error {
 	problems = append(problems, checkInternalLinks(root, posts)...)
 
 	warnings := checkThumbnails(root)
+	warnings = append(warnings, checkPlaceholderNotes(root)...)
 
 	for _, w := range warnings {
 		fmt.Printf("  ! %s\n", w)
@@ -169,6 +170,24 @@ func checkThumbnails(root string) []string {
 		if _, err := os.Stat(filepath.Join(thumbsDir(root), id+".jpg")); err != nil {
 			warnings = append(warnings, fmt.Sprintf(
 				"no thumbnail for video %s — run `npm run thumbs`", id))
+		}
+	}
+	return warnings
+}
+
+// checkPlaceholderNotes flags the note `blogctl add` writes when -note is
+// omitted. A warning, like a missing thumbnail: the page still renders, it
+// just says TODO in public.
+func checkPlaceholderNotes(root string) []string {
+	var warnings []string
+	for _, name := range []string{"videos.ts", "tweets.ts"} {
+		raw, err := os.ReadFile(filepath.Join(root, "content", name))
+		if err != nil {
+			continue
+		}
+		if n := strings.Count(string(raw), notePlaceholder); n > 0 {
+			warnings = append(warnings, fmt.Sprintf(
+				"content/%s: %d note(s) still say %q", name, n, notePlaceholder))
 		}
 	}
 	return warnings
